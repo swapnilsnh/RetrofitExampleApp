@@ -8,12 +8,15 @@ import com.example.retrofitexampleapp.api.ApiClient;
 import com.example.retrofitexampleapp.api.ApiInterface;
 import com.example.retrofitexampleapp.databinding.ActivityMainBinding;
 import com.example.retrofitexampleapp.model.MultipleResource;
+import com.example.retrofitexampleapp.model.User;
+import com.example.retrofitexampleapp.model.UserList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -55,7 +58,49 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MultipleResource> call, Throwable t) {
+                call.cancel();
+            }
+        });
 
+        /**
+         Create New User
+         **/
+        User user =  new User("Morpheus","Leader");
+        Call<User> call1 = apiInterface.createUser(user);
+        call1.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User user1  = response.body();
+                Toast.makeText(MainActivity.this, user1.name+ " "+ user1.job, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                call.cancel();
+            }
+        });
+
+        /**
+         Get List Users
+         **/
+        Call<UserList> call2 =  apiInterface.doGetUserList("2");
+        call2.enqueue(new Callback<UserList>() {
+            @Override
+            public void onResponse(Call<UserList> call, Response<UserList> response) {
+                UserList userList =  response.body();
+                Integer text = userList.page;
+                Integer total = userList.total;
+                Integer totalPages = userList.totalPages;
+                List<UserList.Datum> datumList =  userList.data;
+                Toast.makeText(MainActivity.this, text+" page\n"+ total+" total\n"+totalPages+" total pages\n", Toast.LENGTH_SHORT).show();
+                for (UserList.Datum datum : datumList){
+                    Toast.makeText(MainActivity.this, "id: "+datum.id + " name: " + datum.firstName + " " + datum.last_name + " avatar: " + datum.avatar, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserList> call, Throwable t) {
+                call2.cancel();
             }
         });
     }
