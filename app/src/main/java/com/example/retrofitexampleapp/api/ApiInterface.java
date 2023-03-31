@@ -24,6 +24,6 @@ public interface ApiInterface {
     Call<UserList> doGetUserList(@Query("page") String page);
 
     @FormUrlEncoded
-    @POST
+    @POST("/api/users?")
     Call<UserList> doCreateUserWithField(@Field("name") String name, @Field("job") String job);
 }
